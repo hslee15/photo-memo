@@ -68,12 +68,15 @@ router.post("/login", async(req,res)=>{
             email:email.toLowerCase(),
             isActive:true
         })
-
         
-        
-        user.loginAttempts +=1
-
-
+        //로그인 시도 횟수 카운트
+        if(!user || !(await user.comparePassword(password))) {
+            if (user){
+                user.loginAttempts +=1;
+                await user.save();
+            }
+            return res.status(400).json({message:"로그인 실패"})
+        }
 
         if(!user)return res.status(400).json({message:"이메일이 틀렸습니다."})
 
