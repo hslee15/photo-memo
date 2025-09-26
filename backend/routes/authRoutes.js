@@ -69,7 +69,11 @@ router.post("/login", async(req,res)=>{
             isActive:true
         })
 
+        
+        
         user.loginAttempts +=1
+
+
 
         if(!user)return res.status(400).json({message:"이메일이 틀렸습니다."})
 
