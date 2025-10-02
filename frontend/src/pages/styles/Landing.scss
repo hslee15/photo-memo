@@ -1,0 +1,30 @@
+.landing-hero{
+    padding: 6rem 0;
+    margin-bottom: 3rem;
+    background-color: linear-gradient(135deg, #f7f7ff, #fafafa);
+    border-radius: var(--radius-l);
+}
+
+.landing-sub{
+    margin: 1rem 0 2rem;
+}
+
+.landing-features{
+    display: flex;
+}
+.landing-features li{
+    width: 200vh;
+    height: 20vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-l);
+}
+
+@media screen and (max-width:800px) {
+
+    .landing-features{
+        flex-direction: column;
+    }
+}
