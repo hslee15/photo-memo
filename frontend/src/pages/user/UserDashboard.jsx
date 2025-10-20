@@ -1,9 +1,14 @@
 import React from 'react'
+import FileList from './FileList'
+import UploadForm from './UploadForm'
 
 const UserDashboard = () => {
-  return (
-    <div>U</div>
-  )
+    return (
+        <section>
+            <UploadForm/>
+            <FileList/>
+        </section>
+    )
 }
 
 export default UserDashboard
