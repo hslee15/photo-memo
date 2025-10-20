@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './styles/AuthPanel.scss'
+import "./styles/AuthPanel.scss"
 import AuthModal from "./AuthModal"
 
 const AuthPanel = ({
@@ -15,16 +15,17 @@ const AuthPanel = ({
 
   const [open, setOpen] = useState(false)
   const hasRequiredRole = !requiredRole || (user && user.role == requiredRole)
-  const navigate=useNavigate()
+  const navigate = useNavigate()
 
-  const isAdminPage=requiredRole==='admin'
-  const title=isAdminPage? '관리자 인증':'로그인'
+  const isAdminPage = requiredRole==='admin'
+  const title = isAdminPage? '관리자인증':'로그인'
+
 
   useEffect(()=>{
     if(!isAuthed || !user) return
 
     if(isAdminPage){
-      if(user.role==='admin'){
+      if(user.role ==='admin'){
         navigate('/admin/dashboard',{replace:true})
       }else{
         

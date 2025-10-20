@@ -1,25 +1,26 @@
 import axios from "axios"
 
 
-const BASE_URL=import.meta.env.VITE_API_URL
+const BASE_URL = import.meta.env.VITE_API_URL
 
-const api=axios.create({
-    baseURL:BASE_URL,
-    withCredentials:true
+const api = axios.create({
+    baseURL: BASE_URL,
+    withCredentials: true
 })
 
+
 api.interceptors.request.use(
-    (config)=>{    
-    const token=localStorage.getItem('token')
-    if(token) config.headers.Authorization=`Bearer ${token}`
-    return config
-},(err)=>Promise.reject(error)
+    (config) => {
+        const token = localStorage.getItem('token')
+        if (token) config.headers.Authorization = `Bearer ${token}`
+        return config
+    },(error)=>Promise.reject(error)
 )
 
 api.interceptors.response.use(
     (res)=>res,
     (err)=>{
-        const code=err?.response?.status
+        const code =err?.response?.status
 
         if(code==401 || code==403){
             localStorage.removeItem('token')
@@ -44,17 +45,15 @@ export async function register({email, password, displayname}){
     return data
 
 }
-
 export async function login({email, password}){
 
     const {data}=await api.post('/api/auth/login',{
         email,
-        password
+        password,
     })
     return data
 
 }
-
 export async function fetchMe(){
     const {data}=await api.get('/api/auth/me')
 
@@ -65,11 +64,12 @@ export async function logout(){
     return await api.post('/api/auth/logout')
 }
 
+
 export function saveAuthToStorage({user,token}){
 
     if(user) localStorage.setItem('user',JSON.stringify(user))
     if(token) localStorage.setItem('token',token)
-    
+
 }
 
 export function clearAuthStorage(){
