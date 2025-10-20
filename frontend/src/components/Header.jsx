@@ -1,11 +1,11 @@
 import React from 'react'
 import {logout as apiLogout} from '../api/client'
 import { useNavigate,NavLink,Link } from 'react-router-dom'
-const Header = (
+const Header = ({
     isAuthed,
     user,
     onLogout
-) => {
+}) => {
 
     const navigate=useNavigate()
     const handleLogout=async()=>{
