@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import "./styles/Landing.scss"
+import './styles/Landing.scss'
 const Landing = () => {
     return (
         <section className="landing">
