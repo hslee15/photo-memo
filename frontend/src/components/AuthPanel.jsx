@@ -48,7 +48,8 @@ const AuthPanel = ({
 
 
   return (
-    <section className='container-sm admin-card'>
+    <section className='admin-wrap'>
+      <div className="inner">
       <header className='admin-head'>
         <h1 className='title'>관리자 인증</h1>
         <p>
@@ -99,7 +100,7 @@ const AuthPanel = ({
           {JSON.stringify(me, null, 2)}
         </pre>
       )}
-
+      </div>
     </section>
   )
 }
