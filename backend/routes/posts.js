@@ -5,25 +5,30 @@ const jwt=require('jsonwebtoken')
 const {presignGet}=require('../src/s3')
 const mongoose=require('mongoose')
 
-const authenticateToken=(req, res, next)=>{
+const authenticateToken = (req, res, next) => {
 
-    let token=null;
+    let token = null;
 
-    if(req.cookies?.token) token=req.cookies.token
-
-    if(!token && req.headers.authorization){
-        const h=req.headers.authorization;
-
-        if(h.toLowerCase().startsWith('bearer')) token=h.slice(7)
+    const h = req.headers.authorization;
+    
+    if (h.toLowerCase().startsWith('bearer')) {
+        token = h.slice(7).trim()
     }
 
-    if(!token) return res.status(401).json({message:'토큰이 없습니다.'})
+    if (req.cookies?.token) {
+        token = req.cookies.token
+    }
+
+    
+    if (!token) return res.status(401).json({ message: '토큰이 없습니다.' })
+
     try {
-        req.user=jwt.verify(token, process.env.JWT_SECRET)
+        req.user = jwt.verify(token, process.env.JWT_SECRET)
         next()
     } catch (error) {
-        return res.status(403).json({message:'유효하지 않은 토큰입니다.'})
+        return res.status(403).json({ message: '유효하지 않은 토큰입니다.' })
     }
+
 }
 
 const ensureObjectId=(req, res, next)=>{
@@ -33,22 +38,30 @@ const ensureObjectId=(req, res, next)=>{
     next()
 }
 
-const pickDefined = (obj) => {
-    return Object.fromEntries(
+const pickDefined = (obj) => 
+    Object.fromEntries(
         Object.entries(obj)
             .filter(([, v]) => v !== undefined)
     )
-}
 
 router.post('/',authenticateToken,async(req,res)=>{
     try {
         const { title, content, fileUrl = [], imageUrl } = req.body
+
+        if(typeof fileUrl==='string'){
+            try {
+                fileUrl=JSON.parse(fileUrl)
+            } catch (error) {
+                fileUrl=[fileUrl]
+            }
+        }
 
         const latest=await Post.findOne().sort({number:-1})
 
         const nextNumber=latest? latest.number +1: 1
 
         const post=await Post.create({
+            user:req.user._id || req.user.id,
             number :nextNumber,
             title,
             content,
