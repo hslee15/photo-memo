@@ -13,7 +13,7 @@ const AuthPanel = ({
   requiredRole
 }) => {
 
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(true)
   const hasRequiredRole = !requiredRole || (user && user.role == requiredRole)
   const navigate = useNavigate()
 
@@ -36,19 +36,9 @@ const AuthPanel = ({
     }
   },[isAuthed,user,isAdminPage,navigate])
 
-  if (open) {
+  if (!open) {
     return (
-      <AuthModal
-        open={open}
-        onClose={() => setOpen(false)}
-        onAuthed={onAuthed}
-      />
-    )
-  }
-
-
-  return (
-    <section className='admin-wrap'>
+      <section className='admin-wrap'>
       <div className="inner">
       <header className='admin-head'>
         <h1 className='title'>관리자 인증</h1>
@@ -85,8 +75,6 @@ const AuthPanel = ({
         </div>
       )}
 
-
-
       {/* 권한 없음 경고 */}
       {!hasRequiredRole && (
         <div className="alert alert-warn">
@@ -102,6 +90,15 @@ const AuthPanel = ({
       )}
       </div>
     </section>
+    )
+  }
+  
+  return (
+    <AuthModal
+      open={open}
+      onClose={() => setOpen(false)}
+      onAuthed={onAuthed}
+    />
   )
 }
 
