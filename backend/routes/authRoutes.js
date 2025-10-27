@@ -3,7 +3,7 @@ const router = express.Router()
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 const User = require("../models/User")
-
+const {authenticateToken}=require('../middlewares/auth');
 
 function makeToken(user) {
     return jwt.sign(
@@ -158,7 +158,7 @@ router.post("/login", async (req, res) => {
     }
 })
 
-router.use(auth)
+router.use(authenticateToken)
 
 
 router.get("/me", async (req, res) => {
