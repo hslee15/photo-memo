@@ -17,7 +17,7 @@ router.post('/presign',async(req,res)=>{
             return res.status(400).json({message:'filename/contentType은 필수입니다.'})
         }
 
-        const key=`uploads/${Date.now()}-${uuidv4()}${path.extname(filename)}|| ""`
+        const key=`uploads/${Date.now()}-${uuidv4()}${path.extname(filename)}`
 
         const url=await presignPut(key, contentType)
 

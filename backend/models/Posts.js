@@ -1,27 +1,28 @@
-const mongoose=require('mongoose')
+const mongoose =require('mongoose')
 
-const postSchema=new mongoose.Schema(
+
+const postSchema = new mongoose.Schema(
     {
         user:{
             type:mongoose.Schema.Types.ObjectId,
             ref:'User',
             required:true
         },
-        Number :{
+        number :{
             type:Number,
-            requried:true,
+            required:true
         },
         title :{
             type:String,
-            requried:true,
+            required:true,
             trim:true
         },
         content :{
             type:String,
-            requried:true,
+            required:true,
             trim:true
         },
-        fileUrl :{
+        fileUrl:{
             type:[String],
             trim:true
         },
@@ -39,7 +40,7 @@ const postSchema=new mongoose.Schema(
             type:Date,
             default:Date.now
         },
-        updated:{
+        updatedAt:{
             type:Date,
             default:Date.now
         }
@@ -49,7 +50,8 @@ const postSchema=new mongoose.Schema(
         timestamps:true
     }
 )
+postSchema.index({ user: 1, number: 1 }, { unique: true });
 
-const Post=mongoose.model("POST", postSchema)
+const Post = mongoose.model("Post",postSchema)
 
-module.exports=Post
+module.exports= Post
