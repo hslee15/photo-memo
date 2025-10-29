@@ -3,7 +3,7 @@ import { createPost,fetchMyPosts } from "../api/postApi";
 
 export function usePosts(){
 
-    const [items, setItem]=useState([])
+    const [items, setItems]=useState([])
     const [loading, setLoading]=useState(false)
 
     const load=useCallback(async()=>{

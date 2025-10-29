@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import FileList from './FileList'
 import UploadForm from './UploadForm'
 import "./style/UserDashboard.scss"
 import { uploadToS3 } from '../../api/postApi'
@@ -49,7 +48,7 @@ const handleUploaded = async ({ title, content, file }) => {
             onClose={() => setOpen(false)}
           />
         )}
-        <FileList 
+        <UserPostList
         items={items}
         loading={loading}
         onReload={load}

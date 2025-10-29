@@ -1,6 +1,6 @@
 import React from 'react'
 import UserPostItem from './UserPostItem'
-import '../user/style/UserPostList'
+import './style/UserPostList.scss'
 
 const UserPostList = ({ items=[], loading, onReload, search}) => {
 
