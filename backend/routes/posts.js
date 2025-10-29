@@ -4,11 +4,20 @@ const Post = require('../models/Posts')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const { authenticateToken } = require('../middlewares/auth');
+const {deleteObject}=require('../src/s3');
 
 const S3_BASE_URL =
-  process.env.S3_BASE_URL ||
-  `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com`; // 추가됨
+    process.env.S3_BASE_URL ||
+    `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com`; // 추가됨
 
+
+    function urlToKey(u) {
+    if (!u) return ''
+    const s = String(u)
+    if (!/^https?:\/\//i.test(s)) return s // 이미 key
+    const base = String(S3_BASE_URL || '').replace(/\/+$/, '')
+    return s.startsWith(base + '/') ? s.slice(base.length + 1) : s
+}
 
 function joinS3Url(base, key) {                       // 추가됨
   const b = String(base || '').replace(/\/+$/, '');
@@ -149,6 +158,14 @@ router.get('/:id', authenticateToken, async (req, res) => {
 router.put('/:id', authenticateToken, ensureObjectId, async (req, res) => { // 변경됨: ensureObjectId 추가
     try {
     const { title, content, fileUrl, imageUrl } = req.body;
+
+    const before=await Post.findById(req.params.id)
+    .select('user fileUrl imageUrl')
+    .lean()
+
+    if(!before) return res.status(404).json({message:'존재하지 않는 게시글'})
+
+    
 
     // 변경됨: undefined 필드로 기존값 덮어쓰지 않도록 필터링
     const updates = pickDefined({
