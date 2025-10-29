@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { createPost } from "../api/postApi";
+import { createPost,fetchMyPosts } from "../api/postApi";
 
 export function usePosts(){
 
@@ -10,9 +10,10 @@ export function usePosts(){
         setLoading(true)
 
         try {
-            
+            const list=await fetchMyPosts()
+            setItems(list)
         } catch (error) {
-            
+            setLoading(false)
         }
 
     })
@@ -26,6 +27,8 @@ export function usePosts(){
         return created
 
     },[])
+
+    useEffect(()=>{load()},[load])
 
     return{
         items,
