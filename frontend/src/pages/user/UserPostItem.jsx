@@ -1,4 +1,5 @@
 import React from 'react'
+import '../user/style/UserPostItem'
 
 const UserPostItem = ({item}) => {
 
