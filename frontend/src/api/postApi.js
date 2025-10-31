@@ -19,6 +19,7 @@ function urlToKey(u) {
 }
 
 export const uploadToS3 = async (file,opts={}) => {
+    
 
     const {
         data: { url, key }
