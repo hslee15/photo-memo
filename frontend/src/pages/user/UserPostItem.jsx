@@ -61,7 +61,9 @@ return (
             >삭제하기</button>
         </div>
         {UploadOpen &&(
-            <UploadForm/>
+            <UploadForm 
+            onClose={setUploadOpen}
+            initail={item}/>
         )}
     </div>
     )

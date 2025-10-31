@@ -1,24 +1,44 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import "./style/UploadForm.scss"
-const UploadForm = ({
-  onUploaded,
-  initail,
-  onClose
-}) => {
+import { usePosts } from '../../hooks/usePosts'
+import { uploadToS3 } from '../../api/postApi'
+import { urlToKey } from '../../util/urlToKey'
+import { toPublicUrl } from '../../util/toPublicUrl'
+const UploadForm = ({initial,onClose}) => {
+  const [add, update, load]=usePosts()
+
+  const isEdit=!!initial?.id
 
   const [form, setForm] = useState({
-    title: initail?.title ?? "",
-    content: initail?.content ?? "",
+    title: initial?.title ?? "",
+    content: initial?.content ?? "",
     file: null,
     preview: null
   })
 
-  const [uploading, setUploading] = useState(false)
-  const panelRef = useRef(null)
+  const [uploading, setUploading] = useState(false);
+  const panelRef = useRef(null);
 
+  useEffect(()=>{
+    if(!initail) return 
+      const row=Array.isArray(initial.fileUrl)
+            ? initial.fileUrl[0]
+            : initial?.fileUrl;
+
+      const firstUrl=row? toPublicUrl(raw) :null
+
+      if(firstUrl) setForm((p)=>({...p,preview}))
+  },[initial]);
+
+  useEffect(()=>{
+    return()=>{
+      if(form.preview && form.preview.startsWith("blob:")){
+        URL.revokeObjectURL(form.preview)
+      }
+    }
+  },[form.preview])
 
   const handleFileChange = (e) => {
-
     const file = e.target.files?.[0]
 
     if (!file) return
@@ -34,9 +54,8 @@ const UploadForm = ({
     e.preventDefault()
 
     if (!form.title.trim()) {
-      console.warn('title empty')
-      alert('제목을 입력하세요')
 
+      alert('제목을 입력하세요')
       return
     }
     if (uploading) return
@@ -44,13 +63,32 @@ const UploadForm = ({
     try {
       setUploading(true)
 
-      await onUploaded?.({
-        title: form.title.trim(),
-        content: form.content.trim(),
-        file: form.file
-      })
+      const uploaded=form.file? await uploadToS3(form.file) :null
 
-      if (form.preview) URL.revokeObjectURL(form.preview)
+      const newKey=uploaded? urlToKey(uploaded):null
+      if(isEdit){
+        const patch = {
+          title: form.title.trim(),
+          content: form.content.trim(),
+          ...(newKey? {fileUrl:[newKey]} : {}),
+        }
+        await update(initail._id,patch)
+        await load()
+        
+      }else{
+        await add({
+          title: form.title.trim(),
+          content: form.content.trim(),
+          fileKeys: newKey? [newKey] : [],
+        })
+        await load()
+      }
+
+
+
+      if (form.preview && form.preview.startsWith('Blob:')){
+        URL.revokeObjectURL(form.preview)
+      } 
 
       setForm({
         title: "",
@@ -59,7 +97,7 @@ const UploadForm = ({
         preview: null
       })
 
-      onClose?.()
+      onClose(false);
     } catch (error) {
 
       console.error('submit error', error)
@@ -126,6 +164,7 @@ const UploadForm = ({
           <button
             type='submit'
             disabled={uploading}
+            
             className="btn primary">
             {uploading ? "업로드 중..." : "업로드"}
           </button>
