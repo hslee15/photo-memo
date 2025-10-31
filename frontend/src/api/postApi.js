@@ -19,14 +19,13 @@ function urlToKey(u) {
 }
 
 export const uploadToS3 = async (file,opts={}) => {
-    
-
+    const { replaceKey=null }=opts;
     const {
         data: { url, key }
     } = await api.post('/api/upload/presign', {
         filename: file.name,
         contentType: file.type,
-        replaceKey
+        replaceKey: replaceKey
     });
 
     const putRes = await fetch(url, {

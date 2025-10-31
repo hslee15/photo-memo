@@ -35,7 +35,7 @@ import {
     const update = useCallback(async (id, patch) => {
         const updated = await updatedPost(id, patch);
         setItems((prev) =>
-        prev.map((i) => (i._id === id ? updated : i))
+        prev.map((i) => (i._id === id ?{...i, ...updated} : i))
         );
         return updated;
     }, []);
