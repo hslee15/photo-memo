@@ -7,6 +7,7 @@ import Header from './components/header'
 import ProtectRoute from './components/ProtectRoute'
 import UserDashboard from './pages/user/userDashboard'
 import AdminDashboard from './pages/admin/adminDashboard'
+import {PostProvider} from './context/PostProvider'
 import {
   fetchMe as apiFetchMe,
   logout as apiLogout,
@@ -74,6 +75,7 @@ function App() {
   }, [isAuthed])
 
   return (
+    <PostProvider>
     <div className='page'>
       {showHeader && <Header
       isAuthed={isAuthed}
@@ -128,6 +130,7 @@ function App() {
         <Route path='*' element={<Navigate to="/" replace />} />
       </Routes>
     </div>
+    </PostProvider>
   )
 }
 

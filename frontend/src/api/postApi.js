@@ -61,3 +61,25 @@ export const fetchAllPosts=async()=>{
 
     return Array.isArray(data)? data:[]
 }
+
+export const fetchPostById=async(id)=>{
+    const {data}=await api.get(`/api/posts/${id}`)
+    return data;
+};
+
+export const updatedPost=async(id,patch)=>{
+
+    const payload={...patch}
+
+    if(patch.fileUrl !==undefined){
+        payload.fileUrl=toKeyArray(payload.fileUrl)
+    }
+    const {data}=await api.put(`/api/posts/${id}`,payload)
+
+    return data;
+};
+
+export const deletePost=async(id)=>{
+    const {data}=await api.delete(`/api/posts/${id}`)
+    return data
+}

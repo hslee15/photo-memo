@@ -1,3 +1,5 @@
+
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -13,6 +15,10 @@
     color: var(--primary-contrast);
     border-color: var(--primary);
   }
+  &.secondary {
+    background: var(--secondary);
+    color: var(--secondary-contrast);
+  }
 
   &.ghost {
     background: var(--border);
@@ -21,5 +27,6 @@
   }
   &.danger {
     background-color: var(--danger);
+    color: var(--danger-contrast);
   }
 }
