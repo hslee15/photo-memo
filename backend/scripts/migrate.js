@@ -1,17 +1,17 @@
-const mongoose=require('mongoose')
-const Post=require('../models/Posts')
-const User=require('../models/User')
+const mongoose =require('mongoose')
+const Post = require('../models/Posts')
+const User= require('../models/User')
 
 (async()=>{
     await mongoose.connect(process.env.MONGO_URI)
 
-    const posts=await Post.find({
+    const posts= await Post.find({
         fileUrl:{$type:'string'}
     }).select('_id fileUrl')
 
     for(const p of posts){
-        p.fileUrl=[p.fileUrl].filter(Boolean)
-        if(!p.status) p.status='approved'
+        p.fileUrl= [p.fileUrl].filter(Boolean)
+        if(!p.status) p.status ='approved'
         await p.save()
     }
 
@@ -19,7 +19,7 @@ const User=require('../models/User')
         {role:{$exists:false}},
         {
             $set:{role:'user',isActive:true},
-            $setOnInsert:{failedLoginAttempt:0}
+            $setOnInsert:{failedLoginAttempts:0}
         }
     )
     console.log('migration done')

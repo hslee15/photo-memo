@@ -30,12 +30,12 @@ const userSchema=new mongoose.Schema(
             default:"user",
             index:true
         },
-        // isActive:{
-        //     type:Boolean,
-        //     default:true
-        // },
+        isActive:{
+            type:Boolean,
+            default:true
+        },
         lastLoginAttempt:{
-            type:Date,
+            type:Date
         },
         failedLoginAttempts:{
             type:Number,
@@ -51,9 +51,9 @@ userSchema.methods.comparePassword=function(plain){
     return bcrypt.compare(plain,this.passwordHash)
 }
 
-userSchema.method.setPassword=async function(plain){
+userSchema.method.setPassword= async function(plain){
     const salt=await bcrypt.genSalt(10)
-    this.passwordHash=await bcrypt.hash(plain,salt)
+    this.passwordHash= await bcrypt.hash(plain,salt)
 }
 
 
@@ -63,7 +63,6 @@ userSchema.methods.toSafeJSON=function(){
     return obj
 }
 userSchema.set('toJSON',{
-
     versionKey:false,
     transform:(_doc,ret)=>{
         delete ret.passwordHash
