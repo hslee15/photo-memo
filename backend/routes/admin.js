@@ -41,4 +41,4 @@ router.get('/posts', authenticateToken, requireRole('admin'),
 )
 
 
-module.export=router
+module.exports=router
