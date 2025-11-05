@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 const User = require("../models/User")
 const Post = require('../models/Posts')
-const Audit= require('../models/AuditLog')
+const audit= require('../middlewares/audit')
 const {authenticateToken}=require('../middlewares/auth');
 const {requireRole}=require('../middlewares/roles')
 
@@ -40,5 +40,86 @@ router.get('/posts', authenticateToken, requireRole('admin'),
     }
 )
 
+router.get('/users',
+    authenticateToken,
+    requireRole('admin'),
+    async(req, res)=>{
+        const {page=1,size=20,role,q}=req.query
+
+        const filter={}
+
+        if(role) filter.role=role
+
+        if(q){
+            filter.$or=[
+                {email: {$regex:q, $options:"i"}},
+                {displayName: {$regex:q, $options:"i"}},
+            ]
+        }
+        const users=await User.find(filter)
+        .sort({createdAt:-1})
+        .skip((+page -1)* +size)
+        .limit(+size)
+        .select("email displayName role isActive createAt updatedAt")
+
+        const total=await User.countDocuments(filter)
+
+        res.json({total, users})
+    }
+)
+
+router.patch('/posts/:id',
+    authenticateToken,
+    requireRole('admin'),
+    audit({
+        resource:"post",
+        action:"update",
+        getTargetId:(req)=>req.params.id
+    }),
+    async(req,res)=>{
+
+const updates=Object.fromEntries(
+    Object.entries(req.body).filter(([,v])=>v!==undefined)
+);
+
+const updated=await Post.findByIdAndUpdate(req.params.id,updates,{
+        new: true
+        })
+
+        if(!updated) return res.status(404).json({message:'게시물 없음'})
+
+        res.json(updated);
+    }
+)
+
+router.patch('/users/:id')(
+    authenticateToken,
+    requireRole('admin'),
+    audit({
+        resource:'user',
+        action:'update',
+        getTargetId:(req)=>req.params.id
+    }),
+    async(req,res)=>{
+        const {role, isActive, resetRock}=req.body
+
+        const updates={}
+
+        if(role) updates.role=role
+
+        if(typeof isActive=='boolean') updates.isActive=isActive
+
+        if(resetRock){
+            updates.failedLoginAttempts=0
+            updates.lastLoginAttempts=null
+        }
+        const user=await User.findByIdAndUpdate(req.params.id,updates,{
+            new:true
+        })
+
+        if(!user) return res.status(404).json({message:'사용자 없음'})
+            res.json(user)
+    }
+)
 
 module.exports=router
