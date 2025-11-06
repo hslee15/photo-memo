@@ -29,7 +29,7 @@ router.get('/posts', authenticateToken, requireRole('admin'),
 
         const filter={}
         if(status) filter.status=status
-        if(q) filter.title={$relex:q, $options:'i'}
+        if(q) filter.title={$regex:q, $options:'i'}
         const items=await Post.find(filter)
         .sort({updatedAt:-1})
         .skip((+page -1)* +size)
@@ -60,7 +60,7 @@ router.get('/users',
         .sort({createdAt:-1})
         .skip((+page -1)* +size)
         .limit(+size)
-        .select("email displayName role isActive createAt updatedAt")
+        .select("email displayName role isActive createdAt updatedAt")
 
         const total=await User.countDocuments(filter)
 
@@ -92,7 +92,7 @@ const updated=await Post.findByIdAndUpdate(req.params.id,updates,{
     }
 )
 
-router.patch('/users/:id')(
+router.patch('/users/:id',
     authenticateToken,
     requireRole('admin'),
     audit({

@@ -8,6 +8,9 @@ import ProtectRoute from './components/ProtectRoute'
 import UserDashboard from './pages/user/userDashboard'
 import AdminDashboard from './pages/admin/adminDashboard'
 import {PostProvider} from './context/PostProvider'
+import AdminLayout from './components/admin/AdminLayout'
+import AdminPosts from "./pages/admin/AdminPosts"
+import AdminUsers from "./pages/admin/AdminUsers"
 import {
   fetchMe as apiFetchMe,
   logout as apiLogout,
@@ -123,9 +126,13 @@ function App() {
               requiredRole="admin"
             />
           }
-        >
+          >
+          <Route element={<AdminLayout/>}>
           <Route index element={<Navigate to="/admin/dashboard" replace/>}/>
           <Route path='dashboard' element={<AdminDashboard/>}/>
+          <Route path='posts' element={<AdminPosts/>}/>
+          <Route path='users' element={<AdminUsers/>}/>
+          </Route>
         </Route>
         <Route path='*' element={<Navigate to="/" replace />} />
       </Routes>
