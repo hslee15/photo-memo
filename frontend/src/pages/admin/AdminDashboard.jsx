@@ -1,5 +1,5 @@
 import React ,{useState, useEffect}from 'react'
-import { feetchAdminStats } from '../../api/AdminApi'
+import { fetchAdminStats } from '../../api/adminApi'
 import AdminStats from '../../components/admin/AdminStats'
 
 const AdminDashboard = () => {
@@ -12,7 +12,7 @@ const AdminDashboard = () => {
   useEffect(()=>{
     (async()=>{
       try {
-        const s = await feetchAdminStats()
+        const s = await fetchAdminStats()
         setStats(s)
       } catch (error) {
         console.error('관리자 통계 불러오기 실패',error)

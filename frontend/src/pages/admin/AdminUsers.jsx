@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import AdminUserFilter from "../../components/admin/AdminUserFilter";
 import AdminUserList from "../../components/admin/AdminUserList";
-import { patchAdminUser, fetchAdminUsers } from "../../api/AdminApi";
+import { patchAdminUser, fetchAdminUsers } from "../../api/adminApi";
 import useAdminFiltered from "../../hooks/useAdminFiltered";
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
