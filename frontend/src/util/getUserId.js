@@ -9,5 +9,5 @@ export const getUserId=(u)=>{
     }
 
     return String(u).toLowerCase()
-    
+
 }
