@@ -40,33 +40,66 @@ router.get('/posts', authenticateToken, requireRole('admin'),
     }
 )
 
-router.get('/users',
+router.get(
+    "/posts",
     authenticateToken,
-    requireRole('admin'),
-    async(req, res)=>{
-        const {page=1,size=20,role,q}=req.query
+    requireRole("admin"),
+    async (req, res) => {
+        try {
+        const { page = 1, size = 20, status, q, user, userId } = req.query;
 
-        const filter={}
+        //  안전 정규화 (trim/소문자)
+        const _status = String(status ?? "").trim().toLowerCase();
+        const _q = String(q ?? "").trim();
 
-        if(role) filter.role=role
+        // 🟩 user 입력값 정리: user 또는 userId 중 하나, trim 필요
+        const uidRaw = (user ?? userId ?? "").toString().trim();
 
-        if(q){
-            filter.$or=[
-                {email: {$regex:q, $options:"i"}},
-                {displayName: {$regex:q, $options:"i"}},
-            ]
+        // 🟩 필터 조립을 $and로 (추가 조건과 충돌 방지)
+        const and = [];
+
+        // status 필터
+        if (_status) {
+            if (_status === "pending") {
+            and.push({
+                $or: [
+                { status: "pending" },
+                { status: { $exists: false } },
+                { status: { $regex: /^pending$/i } },
+                ],
+            });
+            } else {
+            and.push({ status: _status });
+            }
         }
-        const users=await User.find(filter)
-        .sort({createdAt:-1})
-        .skip((+page -1)* +size)
-        .limit(+size)
-        .select("email displayName role isActive createdAt updatedAt")
 
-        const total=await User.countDocuments(filter)
+        // 제목 검색
+        if (_q) and.push({ title: { $regex: _q, $options: "i" } });
 
-        res.json({total, users})
+        // 🟩 작성자 필터 (ObjectId만 허용 버전)
+        if (uidRaw) {
+            if (!mongoose.isValidObjectId(uidRaw)) {
+            return res.status(400).json({ message: "잘못된 userId 형식" });
+            }
+            and.push({ user: new mongoose.Types.ObjectId(uidRaw) });
+        }
+
+        const filter = and.length ? { $and: and } : {};
+
+        const items = await Post.find(filter)
+            .sort({ updatedAt: -1 })
+            .skip((Number(page) - 1) * Number(size))
+            .limit(Number(size))
+            .select("title user status fileUrl updatedAt");
+
+        return res.json(items);
+        } catch (err) {
+        console.error("[ADMIN /posts] error", err);
+        return res.status(500).json({ message: "서버 오류", error: err.message });
+        }
     }
-)
+);
+
 
 router.patch('/posts/:id',
     authenticateToken,

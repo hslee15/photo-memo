@@ -1,14 +1,14 @@
 import React from 'react'
-import {Outlet, NavLink} from "react-router-dom"
+import {Outlet} from "react-router-dom"
 import AdminNav from './AdminNav'
 
 const AdminLayout = () => {
   return (
     <div>
-      <AdminNav/>
-      <main>
-        <Outlet/>
-      </main>
+        <AdminNav/>
+        <main>
+            <Outlet/>
+        </main>
     </div>
   )
 }
