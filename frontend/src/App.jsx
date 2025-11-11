@@ -11,6 +11,7 @@ import {PostProvider} from './context/PostProvider'
 import AdminLayout from './components/admin/AdminLayout'
 import AdminPosts from "./pages/admin/AdminPosts"
 import AdminUsers from "./pages/admin/AdminUsers"
+import KakaoCallback from './pages/KakaoCallback'
 import {
   fetchMe as apiFetchMe,
   logout as apiLogout,
@@ -88,6 +89,11 @@ function App() {
 
       <Routes>
         <Route path='/' element={<Landing />} />
+
+        <Route 
+        path='/oauth/kakao' 
+        
+        element={<KakaoCallback onAuthed={handleAuthed}/>} />
         {/* 로그인 회원가입 */}
         <Route
           path='/admin/login'

@@ -80,5 +80,5 @@ export function clearAuthStorage(){
 }
 
 
-
+export {BASE_URL}
 export default api
