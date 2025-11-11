@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const passport=require('./config/passport')
 
 // authRoutes
-const authRoutes=require("./routes/authroutes")
+const authRoutes=require("./routes/authRoutes")
 const uploadRoutes=require('./routes/upload')
 const postRoutes = require('./routes/posts')
 const adminRoutes = require('./routes/admin')

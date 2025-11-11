@@ -1,52 +1,45 @@
-import React,{useEffect} from 'react'
-import {replace, useNavigate} from 'react-router-dom'
-import {saveAuthToStorage,fetchMe} from '../api/client'
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { fetchMe, saveAuthToStorage } from "../api/client";
 
+const KakaoCallback = ({ onAuthed }) => {
+    const navigate = useNavigate();
 
-const KakaoCallback = (onAuthed) => {
+    useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
 
-    const navigate=useNavigate()
+    if (!token) {
+    navigate("/admin/login?error=kakao", { replace: true });
+    return;
+    }
 
-    useEffect(()=>{
+    saveAuthToStorage({ token });
 
-        const params=new URLSearchParams(window.location.search)
-        const token=params.get('token')
+    const run = async () => {
+    try {
+        const me = await fetchMe();
+        saveAuthToStorage({ user: me, token });
+        onAuthed?.({ user: me, token });
 
-        //2
-        if(!token){
-            navigate('/admin/login?error=kakao',{replace:true})
-            return 
-        }
+        if (me.role === "admin") navigate("/admin/dashboard", { replace: true });
+        else navigate("/user/dashboard", { replace: true });
+    } catch (err) {
+        console.error("Kakao callback /me error:", err);
+        navigate("/admin/login?error=kakao", { replace: true });
+    }
+    };
 
-        //3
-        saveAuthToStorage({token})
-
-        (async()=>{
-            try {
-                const me=await fetchMe()
-
-                saveAuthToStorage({user:me, token})
-
-                onAuthed?.({user:me,token})
-
-                if(me.role==='admin'){
-                    navigate('/admin/dashboard', {replace:true})
-                }else{
-                    navigate('/user/dashboard',{replace:true})
-                }
-            } catch (error) {
-                console.error('kakao callback error', error)
-                navigate('/admin/login?error=kakao',{replace:true})
-            }
-        })()
-
-    },[navigate,onAuthed])
+    run();
+    }, [navigate, onAuthed]);
 
     return (
-        <div>
-            <p>카카오 로그인 처리중입니다....</p>
-        </div>
-    )
-}
+    <section className="admin-wrap">
+    <div className="inner">
+        <p>카카오 로그인 처리 중입니다...</p>
+    </div>
+    </section>
+    );
+};
 
-export default KakaoCallback
+export default KakaoCallback;
